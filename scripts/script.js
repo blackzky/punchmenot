@@ -30,21 +30,15 @@ $(document).ready(function() {
 	});
 	initMap();
 	
-	player_postion = randomPosition();
 
-	PLAYER = {
-		name : player_name,
-		row : player_postion.row,
-		col: player_postion.col
+	$PLAYER = {
+		name : "player",
+		row : 0,
+		col: 0
 	}
 	
-	initPlayer(PLAYER);
-	
-	//dummy obstacles
-	$("#" + 13).attr("class", "rock");
-	$("#" + 292).attr("class", "rock");
-	$("#" + 370).attr("class", "rock");
-	$("#" + 401).attr("class", "rock");
+	initPlayer();
+	generateRandomObjects("rock", 5);
 	
 	$KEY = {
 		"w" : 87,
@@ -52,73 +46,97 @@ $(document).ready(function() {
 		"s" : 83,
 		"d" : 68
 	}
-	
+
 	$(document).keydown(function(event) {
-		movePlayer(event, PLAYER);
+		movePlayer(event);
 	});
 	
 });
 
-
-function movePlayer(event, PLAYER){
-	var address = getAddress(PLAYER);
+function movePlayer(event){
+	var current_tile, adjacent_tile;
+	current_tile = getTile($PLAYER.row, $PLAYER.col);
 	switch(event.keyCode){
 			case $KEY.w:
-				$("#" + address).attr("class", "empty");
-				PLAYER.row--;
-				address = getAddress(PLAYER);
-				if(getTile(address) == "rock"){
-					PLAYER.row++;
-					address = getAddress(PLAYER);
-					$("#" + address).attr("class", "player");
-				}else{
-					$("#" + address).attr("class", "player");
+				adjacent_tile = getPlayerAdjacentTile("up");
+				if(adjacent_tile.attr("class") == "empty"){
+					current_tile.attr("class", "empty");
+					$PLAYER.row--;
+					adjacent_tile.attr("class", "player");
 				}
 			break;
 			case $KEY.a:
-				$("#" + address).attr("class", "empty");
-				PLAYER.col--;
-				address = getAddress(PLAYER);
-				if(getTile(address) == "rock"){
-					PLAYER.col++;
-					address = getAddress(PLAYER);
-					$("#" + address).attr("class", "player");
-				}else{
-					$("#" + address).attr("class", "player");
+				adjacent_tile = getPlayerAdjacentTile("left");
+				if(adjacent_tile.attr("class") == "empty"){
+					current_tile.attr("class", "empty");
+					$PLAYER.col--;
+					adjacent_tile.attr("class", "player");
 				}
 			break;
 			case $KEY.s:
-				$("#" + address).attr("class", "empty");
-				PLAYER.row++;
-				address = getAddress(PLAYER);
-				if(getTile(address) == "rock"){
-					PLAYER.row--;
-					address = getAddress(PLAYER);
-					$("#" + address).attr("class", "player");
-				}else{
-					$("#" + address).attr("class", "player");
+				adjacent_tile = getPlayerAdjacentTile("down");
+				if(adjacent_tile.attr("class") == "empty"){
+					current_tile.attr("class", "empty");
+					$PLAYER.row++;
+					adjacent_tile.attr("class", "player");
 				}
 			break;
 			case $KEY.d:
-				$("#" + address).attr("class", "empty");
-				PLAYER.col++;
-				address = getAddress(PLAYER);
-				if(getTile(address) == "rock"){
-					PLAYER.col--;
-					address = getAddress(PLAYER);
-					$("#" + address).attr("class", "player");
-				}else{
-					$("#" + address).attr("class", "player");
+				adjacent_tile = getPlayerAdjacentTile("right");
+				if(adjacent_tile.attr("class") == "empty"){
+					current_tile.attr("class", "empty");
+					$PLAYER.col++;
+					adjacent_tile.attr("class", "player");
 				}
 			break;
 		}
 }
-function getTile(address){
-	return $("#" + address).attr("class");
+
+function getPlayerAdjacentTile(direction){
+	switch(direction){
+		case "up":
+			return getTile($PLAYER.row - 1, $PLAYER.col);
+		break;
+		case "down":
+			return getTile($PLAYER.row + 1, $PLAYER.col);
+		break;
+		case "left":
+			return getTile($PLAYER.row, $PLAYER.col - 1);
+		break;
+		case "right":
+			return getTile($PLAYER.row, $PLAYER.col + 1);
+		break;
+	}
 }
-function initPlayer(PLAYER){
-	var address = getAddress(PLAYER);
-	$("#" + address).attr("class", "player");
+function getTile(row, col){
+	return $("#" + row + "_" + col);
+}
+function generateRandomObjects(object, occurance){
+	if(occurance == 0){
+		return;
+	}
+	var position = randomPosition();
+	var tile = getTile(position.row, position.col);
+	if(tile.attr("class") == "empty"){
+		tile.attr("class", object);
+		occurance--;
+		generateRandomObjects(object, occurance);
+	}else{
+		generateRandomObjects(object, occurance);
+	}
+}
+function initPlayer(){
+	player_postion = randomPosition();
+	$PLAYER.row = player_postion.row;
+	$PLAYER.col = player_postion.col;
+	var tile = getTile($PLAYER.row, $PLAYER.col);
+	if(tile.attr("class") == "empty"){
+		tile.attr("class", "player");
+	}else{
+		initPlayer();
+	}
+	
+	
 }
 function randomPosition(){
 	var position = {row:0, col:0};
@@ -126,27 +144,15 @@ function randomPosition(){
 	position.col = parseInt(Math.random() * $MAP_INFO.max_col);
 	return position;
 }
-function getAddress(PLAYER){
-	var player_address = (PLAYER.row * $MAP_INFO.max_col) + PLAYER.col;
-	return player_address;
-}
 function initMap(){
 	var html = "";
-	var address = 0;
-	var tile = {
-		row : 0,
-		col : 0
-	}
 	$MAP_DATA = Array($MAP_INFO.max_row);
 	for(row=0;row<$MAP_INFO.max_row;row++){
 		$MAP_DATA[row] = Array($MAP_INFO.max_col);
 		html += "<div class='row'>";
 		for(col=0;col<$MAP_INFO.max_col;col++){
 			$MAP_DATA[col] = "empty";
-			tile.row = row;
-			tile.col = col;
-			address = getAddress(tile);
-			html += "<div class='column'><div id=" + address + " class='" + 'empty' + "'></div></div>";
+			html += "<div class='column'><div id=" + row + "_" + col + " class='" + 'empty' + "'></div></div>";
 		}
 		html += "</div>";
 	}
