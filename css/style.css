@@ -1,8 +1,33 @@
-*{
-  margin: 0;
-  padding: 0;
-}
-
 body{
   background: #fff;
+}
+
+#container{
+	width: 1024px;
+	margin: 0 auto;
+	padding-top: 1em;
+}
+.left{
+	float: left;
+}
+.right{
+	float: right;
+}
+.clear{
+	clear: both;
+}
+#player_list{
+	width: 224px;
+	height: 600px;
+	background-color: aquamarine;
+	float: right;
+}
+#game_canvas{
+	width: 800px;
+	height: 600px;
+	background-color: darkseagreen;
+	float: left;
+}
+#player_list h1{
+	text-align: center;
 }
