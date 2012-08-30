@@ -1,33 +1,39 @@
-body{
-  background: #fff;
-}
-
 #container{
 	width: 1024px;
 	margin: 0 auto;
 	padding-top: 1em;
 }
-.left{
-	float: left;
-}
-.right{
-	float: right;
-}
-.clear{
-	clear: both;
-}
 #player_list{
 	width: 224px;
-	height: 600px;
+	height: 576px;
 	background-color: aquamarine;
 	float: right;
+	overflow: auto;
 }
 #game_canvas{
 	width: 800px;
-	height: 600px;
+	height: 576px;
 	background-color: darkseagreen;
 	float: left;
 }
 #player_list h1{
 	text-align: center;
+}
+#game_canvas .column {
+    height: 32px;
+    width: 32px;
+    float: left;
+}
+#game_canvas .column div {
+    height: 32px;
+    width: 32px;
+}
+.empty{
+	background-image: url("/images/empty.png");
+}
+.player{
+	background-image: url("/images/player.png");
+}
+.rock{
+	background-image: url("/images/rock.png");
 }
